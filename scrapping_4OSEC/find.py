@@ -6,15 +6,18 @@ with open("sitemap.xml", 'r') as f:
 
 content = content[2].split("https")
 
-l = []
+l = [] # Utilisez des noms explicites
 searched = "://readi.fi/asset"
 for url in content:
     if searched in url:
         l.append("https"+url)
 
+# urls = [f"https{url}" for url in content if searched in url]
+
+
 l_title_desc = []
 def get_content(url):
-    global l_title_desc
+    global l_title_desc # On préfère éviter les variables globales, on peut les passer en argument
     response = requests.get(url)
     soup = BeautifulSoup(response.content, "html.parser")
 
@@ -32,8 +35,12 @@ print("getting content")
 l_threads = []
 for i in range(len(l)):
     t = threading.Thread(target=get_content, args=(l[i],)) # l[i] = url; let the `,` where it is.
+    # args attend un itérable (comme une liste ou un tuple), en python (l[i],) est un tuple
     t.start()
     l_threads.append(t)
+# On peut boucler directement sur la liste d'urls:
+# for url in l:
+#     t = threading.Thread(target=get_content, args=(url,))
 
 for t in l_threads: t.join()
 
